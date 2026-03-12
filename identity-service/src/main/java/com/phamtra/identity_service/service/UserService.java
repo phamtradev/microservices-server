@@ -1,23 +1,29 @@
 package com.phamtra.identity_service.service;
 
-import com.phamtra.identity_service.dto.request.UserCreateDTORequest;
-import com.phamtra.identity_service.dto.request.UserUpdateDTORequest;
-import com.phamtra.identity_service.entity.User;
+import com.phamtra.identity_service.dto.request.CreateUserRequest;
+import com.phamtra.identity_service.dto.request.SetUserRoleCodesRequest;
+import com.phamtra.identity_service.dto.request.UpdateUserRequest;
+import com.phamtra.identity_service.dto.response.UserResponse;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public interface UserService {
-    User createUser(UserCreateDTORequest request);
 
-    User updateUser(long id, UserUpdateDTORequest request);
+    UserResponse createUser(CreateUserRequest request);
 
-    List<User> getUsers();
+    List<UserResponse> getAllUsers();
 
-    User getUserbyId(long id);
+    UserResponse getUserById(Long id);
 
-    void deleteUser(long id);
+    UserResponse getUserByEmail(String email);
 
-    boolean isUsernameExist(String username);
+    UserResponse updateUser(Long id, UpdateUserRequest request);
 
-    User getUserByUsername(String username);
+    UserResponse setActive(Long id, boolean active);
+
+    UserResponse setRolesByCodes(Long userId, SetUserRoleCodesRequest request);
+
+    void deleteUser(Long id);
 }
