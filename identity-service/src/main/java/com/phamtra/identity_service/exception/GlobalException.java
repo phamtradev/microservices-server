@@ -1,8 +1,9 @@
 package com.phamtra.identity_service.exception;
 
-import com.phamtra.identity_service.dto.respone.RestRespone;
+import com.phamtra.identity_service.dto.response.RestRespone;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
@@ -28,6 +29,24 @@ public class GlobalException {
         res.setError(ex.getMessage());
         res.setMessage("Exception occurs...");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<RestRespone<Object>> handleAccessDenied(AccessDeniedException ex) {
+        RestRespone<Object> res = new RestRespone<>();
+        res.setStatusCode(HttpStatus.FORBIDDEN.value());
+        res.setError("Access Denied");
+        res.setMessage("Bạn không có quyền thực hiện hành động này!");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(res);
+    }
+
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<RestRespone<Object>> handleNullPointerException(NullPointerException ex) {
+        RestRespone<Object> res = new RestRespone<>();
+        res.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        res.setError("Internal Server Error");
+        res.setMessage("Đã xảy ra lỗi hệ thống! Vui lòng thử lại sau.");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
