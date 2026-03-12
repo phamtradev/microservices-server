@@ -1,4 +1,4 @@
-package com.phamtra.profile_service.Service;
+package com.phamtra.profile_service.service;
 
 import com.phamtra.profile_service.dto.request.CreateUserProfileRequest;
 import com.phamtra.profile_service.dto.response.CreateUserProfileResponse;
