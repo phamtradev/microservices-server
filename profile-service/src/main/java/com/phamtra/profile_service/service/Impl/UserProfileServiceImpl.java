@@ -1,6 +1,6 @@
-package com.phamtra.profile_service.Service.Impl;
+package com.phamtra.profile_service.service.Impl;
 
-import com.phamtra.profile_service.Service.UserProfileService;
+import com.phamtra.profile_service.service.UserProfileService;
 import com.phamtra.profile_service.dto.request.CreateUserProfileRequest;
 import com.phamtra.profile_service.dto.response.CreateUserProfileResponse;
 import com.phamtra.profile_service.exception.IdInvalidException;

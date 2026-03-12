@@ -1,6 +1,6 @@
 package com.phamtra.profile_service.controller;
 
-import com.phamtra.profile_service.Service.UserProfileService;
+import com.phamtra.profile_service.service.UserProfileService;
 import com.phamtra.profile_service.dto.request.CreateUserProfileRequest;
 import com.phamtra.profile_service.dto.response.CreateUserProfileResponse;
 import org.springframework.web.bind.annotation.GetMapping;
