@@ -19,7 +19,7 @@ public class PermissionController {
     private final PermissionService permissionService;
 
     @PostMapping
-    @PreAuthorize("hasAuthority('PERM_PERMISSION_CREATE')")
+    @PreAuthorize("hasAuthority('PERM_PERM_CREATE')")
     public ResponseEntity<PermissionResponse> createPermission(
             @RequestBody CreatePermissionRequest request) {
         PermissionResponse created = permissionService.createPermission(request);
@@ -27,19 +27,19 @@ public class PermissionController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('PERM_PERMISSION_VIEW')")
+    @PreAuthorize("hasAuthority('PERM_PERM_VIEW')")
     public ResponseEntity<List<PermissionResponse>> getAllPermissions() {
         return ResponseEntity.ok(permissionService.getAllPermissions());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('PERM_PERMISSION_VIEW')")
+    @PreAuthorize("hasAuthority('PERM_PERM_VIEW')")
     public ResponseEntity<PermissionResponse> getPermissionById(@PathVariable Long id) {
         return ResponseEntity.ok(permissionService.getPermissionById(id));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('PERM_PERMISSION_EDIT')")
+    @PreAuthorize("hasAuthority('PERM_PERM_EDIT')")
     public ResponseEntity<PermissionResponse> updatePermission(
             @PathVariable Long id,
             @RequestBody CreatePermissionRequest request) {
@@ -47,7 +47,7 @@ public class PermissionController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('PERM_PERMISSION_DELETE')")
+    @PreAuthorize("hasAuthority('PERM_PERM_DELETE')")
     public ResponseEntity<Void> deletePermission(@PathVariable Long id) {
         permissionService.deletePermission(id);
         return ResponseEntity.noContent().build();
