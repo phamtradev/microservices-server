@@ -5,6 +5,8 @@ import com.phamtra.identity_service.dto.request.SetUserRoleCodesRequest;
 import com.phamtra.identity_service.dto.request.UpdateUserRequest;
 import com.phamtra.identity_service.dto.response.UserResponse;
 import com.phamtra.identity_service.exception.IdInvalidException;
+import com.phamtra.identity_service.httpclient.ProfileClient;
+import com.phamtra.identity_service.mapper.ProfileMapper;
 import com.phamtra.identity_service.mapper.UserMapper;
 import com.phamtra.identity_service.model.Role;
 import com.phamtra.identity_service.model.User;
@@ -12,6 +14,7 @@ import com.phamtra.identity_service.repository.RefreshTokenRepository;
 import com.phamtra.identity_service.repository.RoleRepository;
 import com.phamtra.identity_service.repository.UserRepository;
 import com.phamtra.identity_service.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,22 +25,27 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserMapper userMapper;
+    private final ProfileMapper profileMapper;
     private final PasswordEncoder passwordEncoder;
+    private final ProfileClient profileClient;
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, 
-                          RefreshTokenRepository refreshTokenRepository, UserMapper userMapper, 
-                          PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository,
+                           RefreshTokenRepository refreshTokenRepository, UserMapper userMapper, ProfileMapper profileMapper,
+                           PasswordEncoder passwordEncoder, ProfileClient profileClient) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.refreshTokenRepository = refreshTokenRepository;
         this.userMapper = userMapper;
+        this.profileMapper = profileMapper;
         this.passwordEncoder = passwordEncoder;
+        this.profileClient = profileClient;
     }
 
     @Override
@@ -48,6 +56,11 @@ public class UserServiceImpl implements UserService {
         User user = buildUserFromRequest(request);
 
         User savedUser = userRepository.save(user);
+
+        var profileRequest = profileMapper.toCreateProfileRequest(request);
+        profileRequest.setUserId(user.getId());
+
+        profileClient.createUserProfile(profileRequest);
 
         return userMapper.toUserResponse(savedUser);
     }
