@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: identity-service
+
+  datasource:
+      url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/identity-service}
+      username: ${SPRING_DATASOURCE_USERNAME:root}
+      password: ${SPRING_DATASOURCE_PASSWORD:123456}
+      driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME:com.mysql.cj.jdbc.Driver}
+
+  jpa:
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
+    show-sql: ${SPRING_JPA_SHOW_SQL:true}
+    properties:
+      hibernate:
+        dialect: ${SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT:org.hibernate.dialect.MySQLDialect}
+        format_sql: ${SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL:true}
+
+phamtra:
+  jwt:
+    secret: ${PHAMTRA_JWT_SECRET:qoAEABDke07+AVLepXB4aCMtsT0wMAqR5x2VFyldsnx6e75YQkJH2UcZKTjEyoNgG71SBCXfq5N6NVZxWOfsHQ==}
+    access-token-expiration-seconds: ${PHAMTRA_JWT_ACCESS_TOKEN_EXPIRATION_SECONDS:86400}
+
+app:
+  services:
+    profile: http://localhost:8081/api
