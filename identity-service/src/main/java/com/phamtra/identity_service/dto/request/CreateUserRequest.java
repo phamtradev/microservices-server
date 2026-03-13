@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 @Data
@@ -28,6 +29,10 @@ public class CreateUserRequest {
     private String firstName;
 
     private String lastName;
+
+    private LocalDate dob;
+
+    private String city;
 
     @Builder.Default
     private boolean active = false;
