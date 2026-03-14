@@ -1,14 +1,47 @@
 server:
   port: 8888
 
+app:
+  api-prefix: /api
+
 spring:
   application:
     name: api-gateway
 
   cloud:
     gateway:
-      routes:
-        - id: identity_service
-          uri: httpl://localhost:8080
-          predicates:
-            - Path=/identity/**
+      httpclient:
+        wiretap: true
+      httpserver:
+        wiretap: true
+      server:
+        webflux:
+          routes:
+            - id: identity_service
+              uri: http://localhost:8080
+              predicates:
+                - Path=/api/identity/**
+              filters:
+                - RewritePath=/api/identity/?(?<segment>.*), /api/$\{segment}
+
+            - id: profile_service
+              uri: http://localhost:8081
+              predicates:
+                - Path=/api/profile/**
+              filters:
+                - RewritePath=/api/profile/?(?<segment>.*), /api/$\{segment}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+  endpoint:
+    gateway:
+      access: unrestricted
+
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE
+    org.springframework.web.reactive: DEBUG
+    reactor.netty: DEBUG
