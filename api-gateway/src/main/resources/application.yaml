@@ -1,0 +1,14 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      routes:
+        - id: identity_service
+          uri: httpl://localhost:8080
+          predicates:
+            - Path=/identity/**
