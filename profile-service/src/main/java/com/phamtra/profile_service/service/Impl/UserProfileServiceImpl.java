@@ -8,6 +8,10 @@ import com.phamtra.profile_service.mapper.UserProfileMapper;
 import com.phamtra.profile_service.model.UserProfile;
 import com.phamtra.profile_service.repository.UserProfileRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserProfileServiceImpl implements UserProfileService {
@@ -33,4 +37,21 @@ public class UserProfileServiceImpl implements UserProfileService {
                 .orElseThrow(() -> new IdInvalidException("Profile not found with id: " + id));
         return userProfileMapper.toUserProfileResponse(userProfile);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CreateUserProfileResponse> getAllProfiles() {
+        List<UserProfile> profiles = userProfileRepository.findAll();
+        return mapToProfileResponseList(profiles);
+    }
+
+    private List<CreateUserProfileResponse> mapToProfileResponseList(List<UserProfile> profiles) {
+        return profiles.stream()
+                .map(userProfileMapper::toUserProfileResponse)
+                .toList();
+    }
+
+
+
+
 }
