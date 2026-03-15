@@ -1,60 +1,80 @@
 package com.phamtra.api_gateway.config;
 
-import com.phamtra.api_gateway.service.IdentityService;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import com.phamtra.api_gateway.dto.request.IntrospectRequest;
+import com.phamtra.api_gateway.dto.response.IntrospectResponse;
+import com.phamtra.api_gateway.repository.client.IdentityClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
-import org.springframework.core.Ordered;
+import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-import reactor.netty.http.server.HttpServer;
-import reactor.netty.http.server.HttpServerResponse;
 
-import java.util.Collections;
-import java.util.List;
-
-@Component
 @Slf4j
+@Component
 @RequiredArgsConstructor
-public class AuthenticationFilter implements GlobalFilter, Ordered {
-    private final IdentityService identityService;
+public class AuthenticationFilter implements GlobalFilter {
+
+    private final IdentityClient identityClient;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        log.info("Enter authentication filter....");
 
-        List<String> authHeader = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION);
+        String path = exchange.getRequest().getURI().getPath();
 
-        if (CollectionUtils.isEmpty(authHeader))
-            return unauthenticated(exchange.getResponse());
+        log.info("Enter authentication filter... path={}", path);
 
-        String token = authHeader.getFirst().replace("Bearer ", "");
+        if (path.startsWith("/api/auth")) {
+            return chain.filter(exchange);
+        }
+
+        String authHeader = exchange.getRequest()
+                .getHeaders()
+                .getFirst(HttpHeaders.AUTHORIZATION);
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            log.error("Missing Authorization header");
+
+            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+            return exchange.getResponse().setComplete();
+        }
+
+        String token = authHeader.substring(7);
+
         log.info("Token: {}", token);
 
-        identityService.introspect(token).subscribe(introspectResponseResponseEntity -> {
+        IntrospectRequest request = new IntrospectRequest(token);
 
-        });
+        return identityClient.introspect(request)
+                .flatMap(apiResponse -> {
 
-        return chain.filter(exchange);
+                    if (apiResponse == null || apiResponse.getData() == null) {
+                        log.error("Invalid token: response null");
+                        return unauthorized(exchange);
+                    }
+
+                    IntrospectResponse result = apiResponse.getData();
+
+                    if (!result.isActive()) {
+                        log.error("Token inactive");
+                        return unauthorized(exchange);
+                    }
+
+                    log.info("Token valid for userId={}", result.getId());
+
+                    return chain.filter(exchange);
+                })
+                .onErrorResume(e -> {
+                    log.error("Authentication error", e);
+                    return unauthorized(exchange);
+                });
     }
 
-    @Override
-    public int getOrder() {
-        return 0;
-    }
-
-    Mono<Void> unauthenticated(ServerHttpResponse response) {
-        String body = "Unauthenticated";
-        response.setStatusCode(HttpStatus.UNAUTHORIZED);
-        return response.writeWith(Mono.just(response.bufferFactory().wrap(body.getBytes())));
+    private Mono<Void> unauthorized(ServerWebExchange exchange) {
+        exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+        return exchange.getResponse().setComplete();
     }
 }
