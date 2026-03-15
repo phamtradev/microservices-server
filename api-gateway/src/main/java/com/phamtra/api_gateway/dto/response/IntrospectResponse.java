@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -15,11 +16,6 @@ public class IntrospectResponse {
     private boolean active;
     private Long id;
     private String email;
-    private String firstName;
-    private String lastName;
-    private boolean userActive;
-    private Set<String> roles;
-    private Set<String> permissions;
-    private Long issuedAt;
-    private Long expiresAt;
+    private List<String> roles;
+    private List<String> permissions;
 }

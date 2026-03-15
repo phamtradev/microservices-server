@@ -1,5 +1,6 @@
 package com.phamtra.api_gateway.service.Impl;
 
+import com.phamtra.api_gateway.dto.ApiResponse;
 import com.phamtra.api_gateway.dto.request.IntrospectRequest;
 import com.phamtra.api_gateway.dto.response.IntrospectResponse;
 import com.phamtra.api_gateway.repository.client.IdentityClient;
@@ -17,8 +18,7 @@ public class IdentityServiceImpl implements IdentityService {
         this.identityClient = identityClient;
     }
 
-    @Override
-    public Mono<ResponseEntity<IntrospectResponse>> introspect(String token) {
+    public Mono<ApiResponse<IntrospectResponse>> introspect(String token) {
         return identityClient.introspect(IntrospectRequest
                 .builder()
                 .token(token)

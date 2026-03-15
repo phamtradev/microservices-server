@@ -1,5 +1,6 @@
 package com.phamtra.api_gateway.repository.client;
 
+import com.phamtra.api_gateway.dto.ApiResponse;
 import com.phamtra.api_gateway.dto.request.IntrospectRequest;
 import com.phamtra.api_gateway.dto.response.IntrospectResponse;
 import org.springframework.http.MediaType;
@@ -14,5 +15,5 @@ import reactor.core.publisher.Mono;
 public interface IdentityClient {
 
     @PostExchange(url = "/auth/introspect", contentType = MediaType.APPLICATION_JSON_VALUE)
-    Mono<ResponseEntity<IntrospectResponse>> introspect(@RequestBody IntrospectRequest request);
+    Mono<ApiResponse<IntrospectResponse>> introspect(@RequestBody IntrospectRequest request);
 }
