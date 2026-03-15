@@ -20,16 +20,17 @@ spring:
             - id: identity_service
               uri: http://localhost:8080
               predicates:
-                - Path=/api/identity/**
+                - Path=${app.api-prefix}/identity/**
               filters:
-                - RewritePath=/api/identity/?(?<segment>.*), /api/$\{segment}
+                - RewritePath=${app.api-prefix}/identity/?(?<segment>.*), ${app.api-prefix}/${segment}
 
             - id: profile_service
               uri: http://localhost:8081
               predicates:
-                - Path=/api/profile/**
+                - Path=${app.api-prefix}/profile/users/**,
+#                - ${app.api-prefix}/profile/internal/users/**
               filters:
-                - RewritePath=/api/profile/?(?<segment>.*), /api/$\{segment}
+                - RewritePath=${app.api-prefix}/profile/?(?<segment>.*), ${app.api-prefix}/profile/${segment}
 
 management:
   endpoints:
